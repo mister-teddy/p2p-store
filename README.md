@@ -1,0 +1,51 @@
+# P2P Store
+
+A peer-to-peer web store application. This project allows users to buy and sell items directly through a decentralized web interface.
+
+## The Prototype
+
+- The store is a **standalone `store.html` file**. Double-click to open in your default browser.
+- The app list is loaded from a **dummy SQLite database** and rendered using **React**.
+- Each app listing includes a **Pay button** powered by **LDK** (Lightning Development Kit).
+
+### Prerequisites
+
+- Node.js (recommended v18+)
+- pnpm
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/p2p-store.git
+cd p2p-store
+```
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+### Build
+
+To build the project:
+
+```bash
+pnpm build
+```
+
+This will generate a **standalone `store.html` file** in the `output/` folder. You can double-click this file to open it in your browser.
+
+### Usage
+
+Open `store.html` in your browser to use the P2P Store. The app list will be displayed, and you can use the Pay button for each app.
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+MIT
