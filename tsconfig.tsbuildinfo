@@ -1,0 +1,1 @@
+{"root":["./src/declarations.d.ts","./src/main.tsx","./src/state.ts","./src/types.ts","./src/vite-env.d.ts","./src/components/app-list.tsx","./src/pages/home.tsx","./vite.config.ts"],"version":"5.8.3"}

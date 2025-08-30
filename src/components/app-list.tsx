@@ -1,12 +1,12 @@
 import React from "react";
 import { useAtom } from "jotai";
-import { dummyAppAtom } from "@/state";
+import { appAtom } from "@/state";
 
-const DummyAppList: React.FC = () => {
-  const [apps] = useAtom(dummyAppAtom);
+const AppList: React.FC = () => {
+  const [apps] = useAtom(appAtom);
   return (
     <div className="p-4 bg-white rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4">dummy-app-list</h2>
+      <h2 className="text-xl font-bold mb-4">Discover</h2>
       <ul className="space-y-2">
         {apps.map((app) => (
           <li key={app.id} className="p-2 border rounded flex flex-col">
@@ -19,4 +19,4 @@ const DummyAppList: React.FC = () => {
   );
 };
 
-export default DummyAppList;
+export default AppList;

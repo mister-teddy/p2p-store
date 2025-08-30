@@ -1,11 +1,28 @@
 import { atom } from "jotai";
-import type { DummyApp } from "./types";
+import type { DB } from "./types";
 
-const dummyApps: DummyApp[] = [
-  { id: 1, name: "app-one", description: "first dummy app." },
-  { id: 2, name: "app-two", description: "second dummy app." },
-  { id: 3, name: "app-three", description: "third dummy app." },
-];
+import { SQLocalKysely } from "sqlocal/kysely";
+import { Kysely } from "kysely";
 
-export const dummyAppAtom = atom<DummyApp[]>(dummyApps);
-export type DummyAppAtom = typeof dummyAppAtom;
+// Initialize SQLocalKysely and pass the dialect to Kysely
+const { dialect } = new SQLocalKysely("database.sqlite3");
+const db = new Kysely<DB>({ dialect });
+db.schema
+  .createTable("apps")
+  .ifNotExists()
+  .addColumn("id", "integer", (col) => col.primaryKey())
+  .addColumn("name", "text")
+  .addColumn("description", "text")
+  .execute();
+
+export const appAtom = atom(async () => {
+  const apps = await db
+    .selectFrom("apps")
+    .select(["id", "name", "description"])
+    .orderBy("name", "asc")
+    .execute();
+
+  console.log({ apps });
+
+  return apps;
+});

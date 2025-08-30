@@ -28,6 +28,16 @@ Install dependencies:
 pnpm install
 ```
 
+### Development
+
+This will start the server on `http://localhost:5173`.
+
+#### Debugging in VS Code
+
+1.  Go to the "Run and Debug" view in VS Code (Shift+Cmd+D or Shift+Ctrl+D).
+2.  Select "Launch Chrome against localhost" from the dropdown and click the green play button.
+3.  This will automatically start the development server and open a new Chrome window connected to the debugger. You can now set breakpoints in your `.tsx` files within VS Code.
+
 ### Build
 
 To build the project:
