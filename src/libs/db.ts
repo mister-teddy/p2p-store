@@ -1,5 +1,6 @@
 import { SQLocalKysely } from "sqlocal/kysely";
-import { Kysely, type Generated } from "kysely";
+import { Kysely } from "kysely";
+import type { DB } from "@/types";
 
 // Simple event emitter for pub/sub
 type DBEvent = "appsChanged" | "categoriesChanged";
@@ -18,26 +19,6 @@ export function subscribeDB(event: DBEvent, listener: Listener) {
 
 function publishDB(event: DBEvent) {
   listeners[event].forEach((listener) => listener());
-}
-
-export interface AppTable {
-  id: Generated<number>;
-  name: string;
-  description: string;
-  icon: string;
-  price?: number;
-  version?: string;
-}
-
-export interface CategoryTable {
-  id: Generated<number>;
-  label: string;
-  icon: string;
-}
-
-export interface DB {
-  apps: AppTable;
-  categories: CategoryTable;
 }
 
 // Initialize SQLocalKysely and pass the dialect to Kysely
@@ -67,7 +48,6 @@ db.schema
           { label: "Work", icon: "💼" },
           { label: "Play", icon: "🎮" },
           { label: "Develop", icon: "🛠️" },
-          { label: "Categories", icon: "📂" },
           { label: "Updates", icon: "🔄" },
         ])
         .execute();
@@ -84,6 +64,7 @@ db.schema
   .addColumn("version", "text")
   .addColumn("price", "real")
   .addColumn("icon", "text")
+  .addColumn("entry", "text")
   .execute()
   .then(async () => {
     const randomVersion = () =>
@@ -103,13 +84,15 @@ db.schema
         .values([
           {
             name: "Notepad",
+            entry: "notepad.js",
             description: "A simple notepad for quick notes and ideas.",
             version: randomVersion(),
-            price: randomPrice(),
+            price: 0,
             icon: "📝",
           },
           {
             name: "To-Do List",
+            entry: "to-do-list.js",
             description: "Manage your tasks and stay organized.",
             version: randomVersion(),
             price: randomPrice(),
@@ -117,13 +100,15 @@ db.schema
           },
           {
             name: "Calendar",
+            entry: "calendar.js",
             description: "View and schedule your events easily.",
             version: randomVersion(),
-            price: 0,
+            price: randomPrice(),
             icon: "📅",
           },
           {
             name: "Chess",
+            entry: "chess.js",
             description: "Play chess and challenge your mind.",
             version: randomVersion(),
             price: randomPrice(),
@@ -131,6 +116,7 @@ db.schema
           },
           {
             name: "File Drive",
+            entry: "file-drive.js",
             description: "Store and access your files securely.",
             version: randomVersion(),
             price: randomPrice(),
@@ -138,13 +124,15 @@ db.schema
           },
           {
             name: "Calculator",
+            entry: "calculator.js",
             description: "Perform quick calculations and solve equations.",
             version: randomVersion(),
-            price: 0,
+            price: randomPrice(),
             icon: "🧮",
           },
           {
             name: "Stocks",
+            entry: "stocks.js",
             description: "Track stock prices and market trends.",
             version: randomVersion(),
             price: randomPrice(),
