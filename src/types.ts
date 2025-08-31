@@ -1,5 +1,3 @@
-import { type Generated, type Selectable } from "kysely";
-
 export type SqlValue = string | number | boolean | null;
 
 export type QueryExecResult = {
@@ -7,15 +5,11 @@ export type QueryExecResult = {
   values: SqlValue[][];
 };
 
-// Kysely Schema
-export interface AppTable {
-  id: Generated<number>;
+export type App = {
+  id: number;
   name: string;
   description: string;
-}
-
-export interface DB {
-  apps: AppTable;
-}
-
-export type App = Selectable<AppTable>;
+  icon: string;
+  price?: number;
+  version?: string;
+};

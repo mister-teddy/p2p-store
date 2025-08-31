@@ -1,34 +1,73 @@
-import React from "react";
-import { useAtom } from "jotai";
-import { appAtom } from "@/state";
+import { appsAtom, selectedCategoryAtom } from "@/state";
+import { useAtomValue } from "jotai";
+import FormatMoney from "./format/money";
+import { useMemo } from "react";
+import Spinner from "./spinner";
 
-const AppList: React.FC = () => {
-  const [apps] = useAtom(appAtom);
+export default function AppList() {
+  const selectedCategory = useAtomValue(selectedCategoryAtom);
+  const apps = useAtomValue(appsAtom);
+
+  // Split apps into 3 chunks, memoized
+  const appChunks = useMemo(() => {
+    const chunkSize = Math.ceil(apps.length / 3);
+    return [
+      apps.slice(0, chunkSize),
+      apps.slice(chunkSize, chunkSize * 2),
+      apps.slice(chunkSize * 2),
+    ];
+  }, [apps]);
+
+  if (!selectedCategory) {
+    return <Spinner />;
+  }
+
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg max-w-2xl mx-auto mt-8">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Discover Apps</h2>
-      <ul className="space-y-6">
-        {apps.map((app) => (
-          <li key={app.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-            <div className="flex-shrink-0 w-16 h-16 bg-blue-500 rounded-lg flex items-center justify-center text-white text-2xl font-bold">
-              {app.name.charAt(0)}
+    <main className="flex-1 px-[5vw] py-8 min-w-0 box-border overflow-y-auto h-full">
+      <h1 className="text-3xl font-bold mb-8">{selectedCategory.label}</h1>
+      <section className="mb-10 h-full">
+        <h2 className="text-xl font-semibold mb-5">
+          Apps and Games We Love Right Now
+        </h2>
+        <div className="w-full flex flex-col lg:flex-row lg:gap-10">
+          {appChunks.map((chunk, i) => (
+            <div
+              key={i}
+              className="w-full lg:w-1/3 flex flex-col border-b border-gray-200 lg:border-none last:border-none"
+            >
+              {chunk.map((app) => (
+                <div
+                  key={app.id}
+                  className={`flex items-center py-6 px-2 min-w-[320px] max-w-full app-list-item border-b border-gray-200 last:border-none`}
+                >
+                  <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center bg-gray-100 rounded-lg mr-6 text-4xl">
+                    {app.icon}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="font-semibold text-lg">{app.name}</div>
+                      <button
+                        type="button"
+                        className="text-blue-600 font-bold text-sm ml-4 bg-bg rounded-full px-4 py-1"
+                      >
+                        {app.price ? <FormatMoney amount={app.price} /> : "Get"}
+                      </button>
+                    </div>
+                    <div className="text-gray-500 text-sm mb-2">
+                      {app.description}
+                    </div>
+                    <div className="flex items-center text-xs text-gray-400">
+                      <span className="mr-2">
+                        Version: {app.version || "—"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="flex-grow">
-              <h3 className="text-xl font-semibold text-gray-900">{app.name}</h3>
-              <p className="text-gray-600 text-sm mt-1">{app.description}</p>
-              <div className="flex items-center mt-2">
-                <span className="text-yellow-500 text-sm">★★★★★</span>
-                <span className="text-gray-500 text-xs ml-2">(1.2K ratings)</span>
-              </div>
-            </div>
-            <button className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
-              GET
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+          ))}
+        </div>
+      </section>
+    </main>
   );
-};
-
-export default AppList;
+}

@@ -8,6 +8,14 @@ A peer-to-peer web store application. This project allows users to buy and sell 
 - The app list is loaded from a **dummy SQLite database** and rendered using **React**.
 - Each app listing includes a **Pay button** powered by **LDK** (Lightning Development Kit).
 
+### App Architecture
+
+- Each purchased app is implemented as a **React component** and receives important APIs as component props, such as `db: Kysely<DB>`. This makes it easy for LLMs to generate code.
+
+- When a user opens an app, the store uses [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) and [lazy loading](https://react.dev/reference/react/lazy) to display the app.
+
+In the future, this could evolve into a microfrontend model.
+
 ### Prerequisites
 
 - Node.js (recommended v18+)
