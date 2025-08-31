@@ -3,26 +3,19 @@ import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import { glob } from "glob";
 
-const entries = {};
-const files = glob.sync("apps/*.tsx", { cwd: __dirname });
-for (const file of files) {
-  const name = file.replace(/\.tsx$/, "");
-  entries[name] = resolve(__dirname, file);
-}
-
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "output",
+    outDir: "output-apps",
     assetsDir: "../assets",
     rollupOptions: {
-      input: entries,
+      input: glob.sync("apps/*.tsx", { cwd: __dirname }),
       output: {
         entryFileNames: "[name].js",
-        chunkFileNames: "../assets/[name]-[hash].js",
-        assetFileNames: "../assets/[name]-[hash][extname]",
-        format: "es",
+        format: "esm",
       },
+      preserveEntrySignatures: "strict",
+      external: ["react", "react-dom"],
     },
   },
   resolve: {

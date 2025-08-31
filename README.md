@@ -54,7 +54,11 @@ To build the project:
 pnpm build
 ```
 
-This will generate a **standalone `store.html` file** in the `output/` folder. You can double-click this file to open it in your browser.
+The P2P Store will be compiled into static resources in the `output` folder, which can then be hosted on a web server. The web server must support `COOP` and `COEP` headers. The simplest way to check this is to use the following command:
+
+```bash
+pnpm preview
+```
 
 ### Usage
 

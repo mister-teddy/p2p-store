@@ -1,6 +1,6 @@
 import type { AppTable } from "@/types";
 import type { Selectable } from "kysely";
-import {
+import React, {
   createElement,
   lazy,
   Suspense,
@@ -40,10 +40,11 @@ const AppRenderer: FunctionComponent<AppRendererProps> = ({
           <div className="fixed inset-0 bg-white z-50 flex flex-col">
             <Suspense fallback={<Spinner />}>
               {createElement(
-                lazy(() => import(`../../apps/notepad`)),
+                lazy(() => import(`../../apps/${app.entry}`)),
                 {
                   app,
                   db,
+                  React,
                 }
               )}
             </Suspense>
