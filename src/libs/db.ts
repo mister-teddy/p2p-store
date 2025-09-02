@@ -58,13 +58,12 @@ db.schema
 db.schema
   .createTable("apps")
   .ifNotExists()
-  .addColumn("id", "integer", (col) => col.primaryKey())
+  .addColumn("id", "text", (col) => col.primaryKey())
   .addColumn("name", "text")
   .addColumn("description", "text")
   .addColumn("version", "text")
   .addColumn("price", "real")
   .addColumn("icon", "text")
-  .addColumn("entry", "text")
   .execute()
   .then(async () => {
     const randomVersion = () =>
@@ -83,56 +82,56 @@ db.schema
         .insertInto("apps")
         .values([
           {
+            id: "notepad",
             name: "Notepad",
-            entry: "notepad.js",
             description: "A simple notepad for quick notes and ideas.",
             version: randomVersion(),
             price: 0,
             icon: "📝",
           },
           {
+            id: "to-do-list",
             name: "To-Do List",
-            entry: "to-do-list.js",
             description: "Manage your tasks and stay organized.",
             version: randomVersion(),
             price: randomPrice(),
             icon: "✅",
           },
           {
+            id: "calendar",
             name: "Calendar",
-            entry: "calendar.js",
             description: "View and schedule your events easily.",
             version: randomVersion(),
             price: randomPrice(),
             icon: "📅",
           },
           {
+            id: "chess",
             name: "Chess",
-            entry: "chess.js",
             description: "Play chess and challenge your mind.",
             version: randomVersion(),
             price: randomPrice(),
             icon: "♟️",
           },
           {
+            id: "file-drive",
             name: "File Drive",
-            entry: "file-drive.js",
             description: "Store and access your files securely.",
             version: randomVersion(),
             price: randomPrice(),
             icon: "🗂️",
           },
           {
+            id: "calculator",
             name: "Calculator",
-            entry: "calculator.js",
             description: "Perform quick calculations and solve equations.",
             version: randomVersion(),
             price: randomPrice(),
             icon: "🧮",
           },
           {
+            id: "stocks",
             name: "Stocks",
-            entry: "stocks.js",
             description: "Track stock prices and market trends.",
             version: randomVersion(),
             price: randomPrice(),

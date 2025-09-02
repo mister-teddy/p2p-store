@@ -9,13 +9,12 @@ export type QueryExecResult = {
 };
 
 export interface AppTable {
-  id: Generated<number>;
+  id: string;
   name: string;
   description: string;
   icon: string;
   price?: number;
   version?: string;
-  entry?: string;
 }
 
 export interface CategoryTable {
