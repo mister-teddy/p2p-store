@@ -1,16 +1,14 @@
-import { categoriesAtom, selectedCategoryIndexAtom } from "@/state";
-import { useAtom, useAtomValue } from "jotai";
+import { selectedCategoryIndexAtom } from "@/state";
+import { useAtom } from "jotai";
 import Profile from "./profile";
-import { useMemo } from "react";
-import { unwrap } from "jotai/utils";
+import CONFIG from "@/config";
 
 export default function Sidebar() {
-  const categories = useAtomValue(
-    useMemo(() => unwrap(categoriesAtom, (prev) => prev ?? []), [])
-  );
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useAtom(
     selectedCategoryIndexAtom
   );
+
+  const categories = Object.values(CONFIG.SIDEBAR_ITEMS);
 
   return (
     <aside className="flex flex-col sticky top-0 h-full z-10 p-6 pr-0">
@@ -28,7 +26,7 @@ export default function Sidebar() {
             {categories.map((category, i) => (
               <li
                 onClick={() => setSelectedCategoryIndex(i)}
-                key={category.label}
+                key={category.title}
                 className={`flex items-center px-5 py-2 cursor-pointer transition-colors select-none font-normal tracking-tight ${
                   selectedCategoryIndex === i
                     ? "text-blue-600 bg-gray-100 font-medium"
@@ -36,7 +34,7 @@ export default function Sidebar() {
                 }`}
               >
                 <span className="mr-2 text-lg">{category.icon}</span>
-                {category.label}
+                {category.title}
               </li>
             ))}
           </ul>

@@ -1,6 +1,7 @@
 import type { AppTable } from "@/types";
 import type { Selectable } from "kysely";
 import { type FunctionComponent, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface AppEntryProps {
   app: Selectable<AppTable>;
@@ -8,13 +9,13 @@ interface AppEntryProps {
 }
 
 const AppEntry: FunctionComponent<AppEntryProps> = ({ app, children }) => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return children({
     onClick: () => {
       if (app.price === 0) {
-        window.open(`/apps/install/${app.id}`, "_blank", "noopener,noreferrer");
-        // navigate(`/apps/install/${app.id}`);
+        // window.open(`/apps/install/${app.id}`, "_blank", "noopener,noreferrer");
+        navigate(`/apps/install/${app.id}`);
       } else {
         alert("Payment with Lightning Network is to be implemented");
       }
