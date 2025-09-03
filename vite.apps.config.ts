@@ -6,12 +6,12 @@ import { glob } from "glob";
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "output-apps",
-    assetsDir: "../assets",
+    outDir: "node_modules/p2p_apps",
+    copyPublicDir: false,
     rollupOptions: {
-      input: glob.sync("apps/*.tsx", { cwd: __dirname }),
+      input: glob.sync("src/apps/*.tsx", { cwd: __dirname }),
       output: {
-        entryFileNames: "[name].js",
+        entryFileNames: "apps/[name].js",
         format: "esm",
       },
       preserveEntrySignatures: "strict",

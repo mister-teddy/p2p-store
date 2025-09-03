@@ -3,7 +3,8 @@ import { useAtomValue } from "jotai";
 import FormatMoney from "./format/money";
 import { useMemo } from "react";
 import Spinner from "./spinner";
-import AppRenderer from "./app-renderer";
+import AppEntry from "./app-entry";
+import AppIcon from "./app-icon";
 
 export default function AppList() {
   const selectedCategory = useAtomValue(selectedCategoryAtom);
@@ -37,20 +38,13 @@ export default function AppList() {
               className="flex flex-col border-b border-gray-200 lg:border-none last:border-none"
             >
               {chunk.map((app) => (
-                <AppRenderer key={app.id} app={app}>
+                <AppEntry key={app.id} app={app}>
                   {({ onClick }) => (
                     <div
                       key={app.id}
                       className={`flex items-center py-6 px-2 max-w-full app-list-item border-b border-gray-200 last:border-none`}
                     >
-                      <div
-                        className="flex-shrink-0 w-16 h-16 flex items-center justify-center bg-gray-100 rounded-lg mr-6 text-4xl"
-                        style={{
-                          viewTransitionName: `app-icon-${app.id}`,
-                        }}
-                      >
-                        {app.icon}
-                      </div>
+                      <AppIcon app={app} />
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <div
@@ -84,7 +78,7 @@ export default function AppList() {
                       </div>
                     </div>
                   )}
-                </AppRenderer>
+                </AppEntry>
               ))}
             </div>
           ))}

@@ -1,0 +1,23 @@
+{
+  "name": "Notepad",
+  "description": "A simple notepad app to take notes quickly.",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot-2.png",
+      "form_factor": "wide"
+    }
+  ],
+  "start_url": "/apps/notepad",
+  "display": "standalone"
+}

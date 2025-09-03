@@ -1,6 +1,6 @@
 import { atom, getDefaultStore } from "jotai";
 import db, { subscribeDB } from "./libs/db";
-import { atomWithRefresh } from "jotai/utils";
+import { atomFamily, atomWithRefresh } from "jotai/utils";
 import { startViewTransition } from "./libs/ui";
 
 // Jotai store for external updates
@@ -47,3 +47,14 @@ export const selectedCategoryAtom = atom(async (get) => {
   }
   return selectedCategory;
 });
+
+export const appByIdAtom = atomFamily((id: string) =>
+  atom(async (get) => {
+    const apps = await get(appsAtom);
+    const selectedApp = apps.find((app) => app.id === id);
+    if (!selectedApp) {
+      return undefined;
+    }
+    return selectedApp;
+  })
+);

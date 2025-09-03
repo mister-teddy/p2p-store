@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
 import { spawn } from "child_process";
-import { rename } from "fs/promises";
+import { readdir, rename, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
 
@@ -25,15 +25,26 @@ export default defineConfig({
             console.error(`apps build failed with code ${code}`);
             return;
           }
-          // Move output-apps to output/apps
-          const src = join(process.cwd(), "output-apps");
-          const dest = join(process.cwd(), "output", "apps");
-          if (existsSync(src)) {
+          // Move files from output-apps/apps to output/apps
+          const srcDir = join(
+            process.cwd(),
+            "node_modules",
+            "p2p_apps",
+            "apps"
+          );
+          const destDir = join(process.cwd(), "output", "apps");
+          if (existsSync(srcDir)) {
             try {
-              await rename(src, dest);
-              console.log("Moved output-apps to output/apps");
+              await mkdir(destDir, { recursive: true });
+              const files = await readdir(srcDir);
+              for (const file of files) {
+                const srcFile = join(srcDir, file);
+                const destFile = join(destDir, file);
+                await rename(srcFile, destFile);
+              }
+              console.log("Moved app files to output/apps");
             } catch (err) {
-              console.error("Failed to move output-apps:", err);
+              console.error("Failed to move app files:", err);
             }
           }
         });
