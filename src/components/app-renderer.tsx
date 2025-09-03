@@ -19,7 +19,11 @@ const AppRenderer: FunctionComponent<AppRendererProps> = ({ app }) => {
     <div className="fixed inset-0 bg-white z-50 flex flex-col">
       <Suspense fallback={<Spinner />}>
         {createElement(
-          lazy(() => import(`../apps/${app.id}`)),
+          lazy(() =>
+            import.meta.env.DEV
+              ? import(`../apps/${app.id}`)
+              : import(`/apps/${app.id}.js`)
+          ),
           {
             app,
             db,
