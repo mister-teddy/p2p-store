@@ -1,4 +1,4 @@
-import type { Generated, Kysely, Selectable } from "kysely";
+import type { Kysely, Selectable } from "kysely";
 import type React from "react";
 
 export type SqlValue = string | number | boolean | null;
@@ -15,17 +15,11 @@ export interface AppTable {
   icon: string;
   price?: number;
   version?: string;
-}
-
-export interface CategoryTable {
-  id: Generated<number>;
-  label: string;
-  icon: string;
+  installed: number;
 }
 
 export interface DB {
   apps: AppTable;
-  categories: CategoryTable;
 }
 
 export type AppProps<T> = {

@@ -1,18 +1,21 @@
 const CONFIG = {
-  SIDEBAR_ITEMS: {
-    DASHBOARD: {
+  SIDEBAR_ITEMS: [
+    {
+      path: "/",
       title: "Dashboard",
       icon: "🏡",
     },
-    APP_SETTINGS: {
+    {
+      path: "/store",
       title: "Store",
       icon: "⭐️",
     },
-    CREATE_APP: {
+    {
+      path: "/create-app",
       title: "Create App",
       icon: "🪄",
     },
-  },
+  ],
 };
 
 export default CONFIG;
