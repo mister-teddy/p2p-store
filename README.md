@@ -79,6 +79,7 @@ flowchart TD
 
 - Node.js (recommended v18+)
 - pnpm
+- Rust (recommended stable)
 
 ### Installation
 
@@ -94,6 +95,29 @@ Install dependencies:
 ```bash
 pnpm install
 ```
+
+#### Running the Rust Mini Server
+
+1. Go to the `server` directory:
+
+   ```bash
+   cd server
+   ```
+
+2. Copy `.env.example` to `.env` and add your Anthropic API key:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env and set ANTHROPIC_API_KEY=your_key_here
+   ```
+
+3. Build and run the server:
+
+   ```bash
+   cargo run
+   ```
+
+The server will start on `http://127.0.0.1:8080` by default and proxy requests to the Anthropic API securely.
 
 ### Development
 
