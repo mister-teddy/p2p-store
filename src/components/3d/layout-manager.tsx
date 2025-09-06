@@ -138,62 +138,58 @@ export default function LayoutManager3D({
       </Canvas>
 
       {/* 3D Mode Toggle & Performance Info (for development/debugging) */}
-      {import.meta.env.DEV && (
-        <>
-          <div className="absolute bottom-4 right-4 z-50 space-y-2">
-            <button
-              onClick={() => setEnabled3DMode(false)}
-              className="px-3 py-1 bg-black/20 backdrop-blur text-white rounded-lg text-sm block"
-            >
-              2D Mode
-            </button>
-          </div>
-          <div className="absolute top-4 right-4 z-50 space-y-2 px-3 py-1 bg-black/20 backdrop-blur text-white rounded-lg text-xs">
-            Device: {deviceType}
-            <br />
-            Performance: {deviceCapabilities.performanceScore}/10
-            <br />
-            Quality: {deviceCapabilities.recommendedQuality}
-            <br />
-            WebGL: {deviceCapabilities.hasWebGL ? "✓" : "✗"}
-            <br />
-            Hardware: {deviceCapabilities.hasHardwareAcceleration ? "✓" : "✗"}
-          </div>
-          {/* Bottom left corner */}
-          <div className="absolute bottom-4 left-4 z-50 flex gap-1">
-            {/* Preset selection */}
-            {Object.keys(presetsObj).map((preset) => (
-              <button
-                key={preset}
-                onClick={() =>
-                  setEnvironmentPreset(preset as keyof typeof presetsObj)
-                }
-                className={`px-2 py-1 rounded text-sm border border-white/30 bg-black/20 backdrop-blur ${
-                  environmentPreset === preset
-                    ? "text-indigo-700 font-bold bg-white/20"
-                    : "text-white"
-                }`}
-                title={preset}
-              >
-                {
-                  {
-                    sunset: "🌅",
-                    dawn: "🌄",
-                    night: "🌃",
-                    warehouse: "🏭",
-                    forest: "🌲",
-                    apartment: "🏢",
-                    studio: "🎬",
-                    city: "🏙️",
-                    park: "🏞️",
-                    lobby: "🏛️",
-                  }[preset]
-                }
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      <div className="absolute bottom-4 right-4 z-50 space-y-2">
+        <button
+          onClick={() => setEnabled3DMode(false)}
+          className="px-3 py-1 bg-black/20 backdrop-blur text-white rounded-lg text-sm block"
+        >
+          2D Mode
+        </button>
+      </div>
+      <div className="absolute top-4 right-4 z-50 space-y-2 px-3 py-1 bg-black/20 backdrop-blur text-white rounded-lg text-xs">
+        Device: {deviceType}
+        <br />
+        Performance: {deviceCapabilities.performanceScore}/10
+        <br />
+        Quality: {deviceCapabilities.recommendedQuality}
+        <br />
+        WebGL: {deviceCapabilities.hasWebGL ? "✓" : "✗"}
+        <br />
+        Hardware: {deviceCapabilities.hasHardwareAcceleration ? "✓" : "✗"}
+      </div>
+      {/* Bottom left corner */}
+      <div className="absolute bottom-4 left-4 z-50 flex gap-1">
+        {/* Preset selection */}
+        {Object.keys(presetsObj).map((preset) => (
+          <button
+            key={preset}
+            onClick={() =>
+              setEnvironmentPreset(preset as keyof typeof presetsObj)
+            }
+            className={`px-2 py-1 rounded text-sm border border-white/30 bg-black/20 backdrop-blur ${
+              environmentPreset === preset
+                ? "text-indigo-700 font-bold bg-white/20"
+                : "text-white"
+            }`}
+            title={preset}
+          >
+            {
+              {
+                sunset: "🌅",
+                dawn: "🌄",
+                night: "🌃",
+                warehouse: "🏭",
+                forest: "🌲",
+                apartment: "🏢",
+                studio: "🎬",
+                city: "🏙️",
+                park: "🏞️",
+                lobby: "🏛️",
+              }[preset]
+            }
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
