@@ -1,9 +1,14 @@
 {
-  "name": "Notepad",
-  "description": "A simple notepad app to take notes quickly.",
+  "name": "Node ノート",
+  "description": "A personal server built for the emerging agentic economy.",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
@@ -18,6 +23,6 @@
       "form_factor": "wide"
     }
   ],
-  "start_url": "/apps/notepad",
+  "start_url": "/",
   "display": "standalone"
 }

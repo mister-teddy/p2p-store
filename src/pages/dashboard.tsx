@@ -5,18 +5,18 @@ import AppGrid3D from "@/components/3d/app-grid-3d";
 // Fallback 2D components
 import AppList from "@/components/app-list";
 
-const HomePage: React.FC = () => {
+const DashboardPage: React.FC = () => {
   const is3DMode = useAtomValue(responsiveIs3DModeAtom);
 
   if (!is3DMode) {
-    return <AppList />;
+    return <AppList installedOnly />;
   }
 
   return (
     <Suspense fallback={null}>
-      {/* Store App Grid */}
+      {/* Main App Grid */}
       <AppGrid3D
-        installedOnly={false}
+        installedOnly={true}
         columns={4}
         spacing={4}
         cardWidth={3}
@@ -26,4 +26,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default DashboardPage;

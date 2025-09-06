@@ -1,5 +1,5 @@
 import AppRenderer from "@/components/app-renderer";
-import { appByIdAtom } from "@/state";
+import { appByIdAtom } from "@/state/app-ecosystem";
 import { useAtomValue } from "jotai";
 import { useNavigate, useParams } from "react-router-dom";
 import NotFound from "./404";
@@ -45,7 +45,7 @@ function AppPage(props: { install?: boolean }) {
         );
       };
     }
-  }, [app, props.install]);
+  }, [app, props.install, id]);
 
   if (!app) {
     return <NotFound />;

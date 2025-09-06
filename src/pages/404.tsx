@@ -12,7 +12,7 @@ export default function NotFound(props: { noToast?: boolean }) {
     navigate(-1 as To, {
       viewTransition: true,
     });
-  }, []);
+  }, [navigate, props.noToast]);
 
   return <></>;
 }

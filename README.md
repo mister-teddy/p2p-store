@@ -8,18 +8,78 @@ A peer-to-peer web store application. This project allows users to buy and sell 
 - The app list is loaded from a **dummy SQLite database** and rendered using **React**.
 - Each app listing includes a **Pay button** powered by **LDK** (Lightning Development Kit).
 
-### App Architecture
+## Architecture
 
-- Each purchased app is implemented as a **React component** and receives important APIs as component props, such as `db: Kysely<DB>`. This makes it easy for LLMs to generate code.
+```mermaid
+---
+config:
+  layout: elk
+  theme: neo
+  look: classic
+---
+flowchart TD
+ subgraph Gossip["P2P Network"]
+        G1["Broadcast: app metadata (name, desc, price, version, hash)"]
+  end
 
-- When a user opens an app, the store uses [dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import) and [lazy loading](https://react.dev/reference/react/lazy) to display the app.
+ subgraph Node["User Node"]
+        RS["Rust Mini Server<br>(HTTP server on :443)"]
+        N1["Node Dashboard PWA<br>(served by Rust server)"]
+        N2["Host APIs:<br>(DB, payments, messaging, storage)<br>(implemented in Rust)"]
 
-In the future, this could evolve into a microfrontend model.
+        subgraph MyApps["My Created Apps (for sale)"]
+            MA1["Notepad App Source"]
+            MA2["Todo App Source"]
+            MA3["...other created apps"]
+        end
+
+        subgraph Downloaded["Downloaded Apps (purchased)"]
+            DA1["Calculator Mini-App"]
+            DA2["Calendar Mini-App"]
+            DA3["...other purchased apps"]
+        end
+ end
+
+ subgraph Device["User Device"]
+        B1@{ label: "Browser visits node.local:443 or IPv6" }
+        B2@{ label: "Installs Node Dashboard as PWA" }
+        B3@{ label: "Accesses mini-apps through dashboard menu" }
+ end
+
+ subgraph External["External Services"]
+        Claude["Claude API<br>(for code generation)"]
+ end
+
+    G1 <-- "Gossip sync<br>(discover & download apps)" --> RS
+    RS --> N1
+    RS --> MyApps
+    RS --> Downloaded
+    VC["Vibe Code Tool"]
+    VC -- "Generate app code" --> MyApps
+    N1 -- "Access tool" --> VC
+    MyApps -- "List for sale" --> G1
+    B1 --> RS
+    B1 -- "Install PWA" --> B2
+    B2 --> B3
+    B3 -- "Menu selection" --> N1
+    N1 -- "Launch mini-app" --> Downloaded
+    B3 <-- "Host API calls" --> N2
+    VC -- "uses" --> Claude
+
+    B1@{ shape: rect}
+    B2@{ shape: rect}
+    B3@{ shape: rect}
+```
+
+- Each app is a self-contained "mini-app" served by the user's personal **Rust Mini Server**.
+- Apps interact with a set of stable **Host APIs** (also implemented in Rust) for functionalities like database, payments, and storage, instead of receiving them as component props.
+- The main "Node Dashboard" is a PWA that launches these mini-apps, potentially using a microfrontend-style architecture.
 
 ### Prerequisites
 
 - Node.js (recommended v18+)
 - pnpm
+- Rust (recommended stable)
 
 ### Installation
 
@@ -35,6 +95,29 @@ Install dependencies:
 ```bash
 pnpm install
 ```
+
+#### Running the Rust Mini Server
+
+1. Go to the `server` directory:
+
+   ```bash
+   cd server
+   ```
+
+2. Copy `.env.example` to `.env` and add your Anthropic API key:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env and set ANTHROPIC_API_KEY=your_key_here
+   ```
+
+3. Build and run the server:
+
+   ```bash
+   cargo run
+   ```
+
+The server will start on `http://127.0.0.1:8080` by default and proxy requests to the Anthropic API securely.
 
 ### Development
 

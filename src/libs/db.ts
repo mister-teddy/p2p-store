@@ -3,11 +3,10 @@ import { Kysely } from "kysely";
 import type { DB } from "@/types";
 
 // Simple event emitter for pub/sub
-type DBEvent = "appsChanged" | "categoriesChanged";
+type DBEvent = "appsChanged";
 type Listener = () => void;
 const listeners: Record<DBEvent, Listener[]> = {
   appsChanged: [],
-  categoriesChanged: [],
 };
 
 export function subscribeDB(event: DBEvent, listener: Listener) {
@@ -26,36 +25,6 @@ const { dialect } = new SQLocalKysely("database.sqlite3");
 const db = new Kysely<DB>({ dialect });
 
 db.schema
-  .createTable("categories")
-  .ifNotExists()
-  .addColumn("id", "integer", (col) => col.primaryKey())
-  .addColumn("label", "text")
-  .addColumn("icon", "text")
-  .execute()
-  .then(async () => {
-    const { count } = await db
-      .selectFrom("categories")
-      .select(db.fn.count("id").as("count"))
-      .executeTakeFirstOrThrow();
-
-    if (Number(count) === 0) {
-      await db
-        .insertInto("categories")
-        .values([
-          { label: "Discover", icon: "⭐" },
-          { label: "Arcade", icon: "🕹️" },
-          { label: "Create", icon: "✏️" },
-          { label: "Work", icon: "💼" },
-          { label: "Play", icon: "🎮" },
-          { label: "Develop", icon: "🛠️" },
-          { label: "Updates", icon: "🔄" },
-        ])
-        .execute();
-      publishDB("categoriesChanged");
-    }
-  });
-
-db.schema
   .createTable("apps")
   .ifNotExists()
   .addColumn("id", "text", (col) => col.primaryKey())
@@ -64,6 +33,7 @@ db.schema
   .addColumn("version", "text")
   .addColumn("price", "real")
   .addColumn("icon", "text")
+  .addColumn("installed", "integer", (c) => c.defaultTo(0).notNull())
   .execute()
   .then(async () => {
     const randomVersion = () =>
@@ -88,6 +58,7 @@ db.schema
             version: randomVersion(),
             price: 0,
             icon: "📝",
+            installed: 1,
           },
           {
             id: "to-do-list",
@@ -96,6 +67,7 @@ db.schema
             version: randomVersion(),
             price: randomPrice(),
             icon: "✅",
+            installed: 0,
           },
           {
             id: "calendar",
@@ -104,6 +76,7 @@ db.schema
             version: randomVersion(),
             price: randomPrice(),
             icon: "📅",
+            installed: 0,
           },
           {
             id: "chess",
@@ -112,6 +85,7 @@ db.schema
             version: randomVersion(),
             price: randomPrice(),
             icon: "♟️",
+            installed: 0,
           },
           {
             id: "file-drive",
@@ -120,6 +94,7 @@ db.schema
             version: randomVersion(),
             price: randomPrice(),
             icon: "🗂️",
+            installed: 0,
           },
           {
             id: "calculator",
@@ -128,6 +103,7 @@ db.schema
             version: randomVersion(),
             price: randomPrice(),
             icon: "🧮",
+            installed: 0,
           },
           {
             id: "stocks",
@@ -136,6 +112,7 @@ db.schema
             version: randomVersion(),
             price: randomPrice(),
             icon: "📈",
+            installed: 0,
           },
         ])
         .execute();
@@ -144,4 +121,3 @@ db.schema
   });
 
 export default db;
-// Only export subscribeDB and publishDB once

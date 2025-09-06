@@ -1,6 +1,4 @@
-import { selectedCategoryAtom } from "@/state";
 import type { AppTable } from "@/types";
-import { useAtomValue } from "jotai";
 import type { Selectable } from "kysely";
 import AppIcon from "./app-icon";
 
@@ -10,7 +8,6 @@ interface AppInstallPageProps {
 }
 
 function AppInstallPage({ onInstall, app }: AppInstallPageProps) {
-  const selectedCategory = useAtomValue(selectedCategoryAtom);
   return (
     <div className="bg-white min-h-screen px-6 py-8">
       {/* Header */}
@@ -65,7 +62,7 @@ function AppInstallPage({ onInstall, app }: AppInstallPageProps) {
               />
             </svg>
           </div>
-          <div className="text-xs text-gray-500">{selectedCategory?.label}</div>
+          <div className="text-xs text-gray-500">Productivity</div>
         </div>
         <div>
           <div className="flex justify-center mb-1">
