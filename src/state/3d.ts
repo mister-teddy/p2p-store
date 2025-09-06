@@ -1,3 +1,4 @@
+import type { Active3DWindow, WindowConfig } from "@/types";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
@@ -5,60 +6,16 @@ import { atomWithStorage } from "jotai/utils";
 export const enabled3DModeAtom = atomWithStorage("is3DMode", true);
 
 // Camera State
-export const cameraPositionAtom = atom<[number, number, number]>([0, 5, 15]);
-export const cameraTargetAtom = atom<[number, number, number]>([0, 0, 0]);
-
-// Layout State
-export interface WindowConfig {
-  id: string;
-  position: [number, number, number];
-  rotation: [number, number, number];
-  scale: [number, number, number];
-  isMinimized: boolean;
-  isMaximized: boolean;
-  isVisible: boolean;
-  zIndex: number;
-  width?: number;
-  height?: number;
-  title?: string;
-  content?: React.ReactNode;
-}
+export const cameraPositionAtom = atomWithStorage<[number, number, number]>(
+  "cameraPosition",
+  [6.73052673149478, 2.6454633073348597, 21.455489862152568]
+);
+export const cameraTargetAtom = atomWithStorage<[number, number, number]>(
+  "cameraTarget",
+  [0, 0, 0]
+);
 
 export const windowConfigsAtom = atom<Record<string, WindowConfig>>({});
-
-// Window Layout Presets
-export const WINDOW_LAYOUTS = {
-  grid: {
-    positions: [
-      [0, 0, 0] as [number, number, number],
-      [5, 0, 0] as [number, number, number],
-      [-5, 0, 0] as [number, number, number],
-      [0, 3, 0] as [number, number, number],
-      [5, 3, 0] as [number, number, number],
-      [-5, 3, 0] as [number, number, number],
-    ],
-  },
-  minimized: {
-    positions: [
-      [-8, -5, 0] as [number, number, number],
-      [-6, -5, 0] as [number, number, number],
-      [-4, -5, 0] as [number, number, number],
-      [-2, -5, 0] as [number, number, number],
-      [0, -5, 0] as [number, number, number],
-      [2, -5, 0] as [number, number, number],
-    ],
-  },
-};
-
-// Window Manager Actions Interface
-export interface WindowManagerActions {
-  createWindow: (id: string, options?: Partial<WindowConfig>) => void;
-  closeWindow: (id: string) => void;
-  minimizeWindow: (id: string) => void;
-  maximizeWindow: (id: string) => void;
-  focusWindow: (id: string) => void;
-  repositionWindows: () => void;
-}
 
 // Responsive State
 export const deviceTypeAtom = atom<"desktop" | "tablet" | "mobile">("desktop");
@@ -230,3 +187,5 @@ export const framesConfigAtom = atom<Record<string, FrameConfig>>({
 export const animationStateAtom = atom<"idle" | "transitioning" | "zooming">(
   "idle"
 );
+
+export const windowsStatesAtom = atom<Active3DWindow[]>([]);

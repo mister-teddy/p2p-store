@@ -1,29 +1,7 @@
-import { Suspense } from "react";
-import { useAtomValue } from "jotai";
-import { responsiveIs3DModeAtom } from "@/state/3d";
-import AppGrid3D from "@/components/3d/app-grid-3d";
-// Fallback 2D components
 import AppList from "@/components/app-list";
 
 const HomePage: React.FC = () => {
-  const is3DMode = useAtomValue(responsiveIs3DModeAtom);
-
-  if (!is3DMode) {
-    return <AppList />;
-  }
-
-  return (
-    <Suspense fallback={null}>
-      {/* Store App Grid */}
-      <AppGrid3D
-        installedOnly={false}
-        columns={4}
-        spacing={4}
-        cardWidth={3}
-        cardHeight={4}
-      />
-    </Suspense>
-  );
+  return <AppList />;
 };
 
 export default HomePage;

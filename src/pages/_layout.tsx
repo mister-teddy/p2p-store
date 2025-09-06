@@ -1,10 +1,7 @@
 import { Suspense } from "react";
 import { useAtomValue } from "jotai";
 import { responsiveIs3DModeAtom } from "@/state/3d";
-import LayoutManager3D from "@/components/3d/layout-manager-3d";
-import WindowManager3D from "@/components/3d/window-manager-3d";
-import FrameSystem3D from "@/components/3d/frame-system-3d";
-import Sidebar3D from "@/components/3d/sidebar-3d";
+import LayoutManager3D from "@/components/3d/layout-manager";
 import Spinner from "@/components/spinner";
 // 2D Layout Components
 import Sidebar from "@/components/sidebar";
@@ -17,21 +14,7 @@ export function RootLayout() {
   if (is3DMode) {
     return (
       <Suspense fallback={<Spinner />}>
-        <LayoutManager3D
-          showStats={process.env.NODE_ENV === "development"}
-          className="w-full h-screen"
-        >
-          <WindowManager3D>
-            {/* Frame System - Persistent UI elements */}
-            <FrameSystem3D showFrames={true} />
-
-            {/* Sidebar Navigation - now has access to Router context */}
-            <Sidebar3D position={[-8, 0, 2]} />
-
-            {/* Page content goes here */}
-            <Outlet />
-          </WindowManager3D>
-        </LayoutManager3D>
+        <LayoutManager3D />
       </Suspense>
     );
   }

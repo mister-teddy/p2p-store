@@ -1,9 +1,12 @@
+import { enabled3DModeAtom } from "@/state/3d";
+import { useSetAtom } from "jotai";
 import { useState, useRef, useEffect } from "react";
 
 export default function Profile() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const clickedRef = useRef(false);
+  const setEnabled3DMode = useSetAtom(enabled3DModeAtom);
 
   // Close popover when clicking outside
   useEffect(() => {
@@ -46,6 +49,14 @@ export default function Profile() {
       </div>
       {open && (
         <div className="absolute left-4 bottom-full -mb-2 py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+          <button
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+            onClick={async () => {
+              setEnabled3DMode(true);
+            }}
+          >
+            3D Mode
+          </button>
           <button
             className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
             onClick={async () => {
