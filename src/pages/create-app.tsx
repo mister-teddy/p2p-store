@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { generateTodoApp } from "@/libs/anthropic";
 import StyledInput from "@/components/forms/input";
+import { generateAppCode } from "@/libs/anthropic";
 
 const CreateAppPage: React.FC = () => {
   const [description, setDescription] = useState("");
@@ -12,7 +12,7 @@ const CreateAppPage: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      const code = await generateTodoApp(description || "Generate a Todo app");
+      const code = await generateAppCode(description || "Generate a Todo app");
       setGeneratedCode(code);
     } catch (err) {
       setError((err as Error).message || "Failed to generate code.");
