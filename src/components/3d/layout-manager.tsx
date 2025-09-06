@@ -13,7 +13,7 @@ import {
   enabled3DModeAtom,
 } from "@/state/3d";
 import GestureSystem3D from "./gesture-system";
-import Sidebar3D from "./sidebar";
+import Launcher3D from "./launcher";
 import Window3D from "./window";
 
 interface LayoutManager3DProps {
@@ -82,11 +82,15 @@ export default function LayoutManager3D({
         className="bg-gradient-to-b from-slate-50 via-blue-50 to-indigo-100"
       >
         {/* Lloyd's Frames */}
-        <Sidebar3D />
+        <Launcher3D />
 
         {/* Page content goes here */}
         {windows.map((window) => (
-          <Window3D title={window.title} icon={window.icon}>
+          <Window3D
+            title={window.title}
+            icon={window.icon}
+            position={window.position}
+          >
             {createElement(window.component)}
           </Window3D>
         ))}

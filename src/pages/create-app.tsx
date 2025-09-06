@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { generateAppCode } from "@/libs/anthropic";
+import { useState } from "react";
+import { generateTodoApp } from "@/libs/anthropic";
 import StyledInput from "@/components/forms/input";
 
 const CreateAppPage: React.FC = () => {
@@ -8,33 +8,11 @@ const CreateAppPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Trigger code generation on mount (user enters app)
-  useEffect(() => {
-    const run = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const code = await generateAppCode(
-          "Generate a starter app code for a new user."
-        );
-        setGeneratedCode(code);
-      } catch (err) {
-        setError((err as Error).message || "Failed to generate code.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    run();
-  }, []);
-
-  // Trigger code generation on button click
   const handleGenerate = async () => {
     setLoading(true);
     setError("");
     try {
-      const code = await generateAppCode(
-        description || "Generate a starter app code for a new user."
-      );
+      const code = await generateTodoApp(description || "Generate a Todo app");
       setGeneratedCode(code);
     } catch (err) {
       setError((err as Error).message || "Failed to generate code.");
@@ -67,7 +45,7 @@ const CreateAppPage: React.FC = () => {
         {/* Generate Button */}
         <button
           className={`
-              px-6 py-3 rounded-lg font-medium transition-colors
+              w-full px-6 py-3 rounded-lg font-medium transition-colors
               ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
@@ -78,7 +56,7 @@ const CreateAppPage: React.FC = () => {
           onClick={handleGenerate}
           disabled={loading}
         >
-          {loading ? "Generating..." : "✨ Vibe Code It"}
+          {loading ? "Generating..." : "Generate App"}
         </button>
 
         {/* Error Display */}
@@ -88,25 +66,25 @@ const CreateAppPage: React.FC = () => {
           </div>
         )}
 
+        {/* Loading State */}
+        {loading && (
+          <div className="flex items-center justify-center p-4">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-gray-600 text-sm">Generating your app...</p>
+            </div>
+          </div>
+        )}
+
         {/* Generated Code */}
         {generatedCode && (
           <div className="flex-1 overflow-hidden">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Generated Code:
             </label>
-            <pre className="w-full h-full bg-gray-900 text-green-400 p-3 rounded-lg overflow-auto text-xs font-mono">
+            <pre className="w-full h-64 bg-gray-900 text-green-400 p-3 rounded-lg overflow-auto text-xs font-mono">
               {generatedCode}
             </pre>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading && !generatedCode && (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-              <p className="text-gray-600 text-sm">Generating your app...</p>
-            </div>
           </div>
         )}
       </div>

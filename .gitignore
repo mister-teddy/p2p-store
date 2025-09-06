@@ -11,6 +11,7 @@ node_modules
 output
 dist-ssr
 *.local
+wasm-server
 
 # Editor directories and files
 .vscode/*

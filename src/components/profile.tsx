@@ -1,5 +1,5 @@
-import { enabled3DModeAtom } from "@/state/3d";
-import { useSetAtom } from "jotai";
+import { enabled3DModeAtom, responsiveIs3DModeAtom } from "@/state/3d";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useState, useRef, useEffect } from "react";
 
 export default function Profile() {
@@ -7,6 +7,7 @@ export default function Profile() {
   const ref = useRef<HTMLDivElement>(null);
   const clickedRef = useRef(false);
   const setEnabled3DMode = useSetAtom(enabled3DModeAtom);
+  const is3D = useAtomValue(responsiveIs3DModeAtom);
 
   // Close popover when clicking outside
   useEffect(() => {
@@ -48,15 +49,21 @@ export default function Profile() {
         <span className="font-normal tracking-tight">Hồng Phát Nguyễn</span>
       </div>
       {open && (
-        <div className="absolute left-4 bottom-full -mb-2 py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-          <button
-            className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
-            onClick={async () => {
-              setEnabled3DMode(true);
-            }}
-          >
-            3D Mode
-          </button>
+        <div
+          className={`absolute left-4 ${
+            is3D ? "top-full -mt-2" : "bottom-full -mb-2"
+          } py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50`}
+        >
+          {!is3D && (
+            <button
+              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+              onClick={async () => {
+                setEnabled3DMode(true);
+              }}
+            >
+              3D Mode
+            </button>
+          )}
           <button
             className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
             onClick={async () => {

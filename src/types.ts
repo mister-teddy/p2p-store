@@ -65,4 +65,5 @@ export interface Active3DWindow {
   title?: string;
   icon?: string;
   component: React.ComponentType;
+  position: [number, number, number];
 }
