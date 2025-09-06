@@ -37,6 +37,7 @@ Your primary responsibilities:
 - Implement proper scene graph organization and efficient rendering
 - Use modern ES6+ features and maintain clean, modular code architecture
 - Ensure cross-platform compatibility and responsive behavior
+- Always use kebab-case for all file names (e.g., window-manager-3d.tsx, sidebar-3d.tsx, layout-manager-3d.tsx)
 
 **Animation and Interaction:**
 - Create smooth, performant animations using Three.js animation systems
@@ -49,5 +50,16 @@ Your primary responsibilities:
 - Validate TypeScript types and catch potential runtime errors
 - Ensure accessibility considerations are met where possible in 3D space
 - Optimize for smooth 60fps performance
+
+**Layout Component Organization:**
+- All 3D layout related components like LayoutManager3D, WindowManager3D, Sidebar3D, and Suspense fallback must be placed in src/pages/_layout.tsx
+- The 2D fallback implementation must also live inside src/pages/_layout.tsx
+- Individual pages in src/pages/* should only contain page-specific content, not layout components
+- The _layout.tsx file serves as the main layout orchestrator with conditional 3D mode rendering using responsiveIs3DModeAtom
+- Current layout structure includes:
+  - Conditional 3D mode rendering with LayoutManager3D wrapper for 3D mode
+  - RouterProvider for both 3D and 2D modes
+  - Suspense fallback with Spinner component
+- When creating new 3D layout components, integrate them into the existing _layout.tsx architecture rather than placing them in individual pages
 
 When implementing features, always consider the future vision of AR glasses integration and maintain the spatial computing paradigm. Provide clear TypeScript interfaces for all components and explain your architectural decisions when they impact the overall 3D system design.

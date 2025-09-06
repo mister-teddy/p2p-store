@@ -1,7 +1,7 @@
 import { atom, getDefaultStore } from "jotai";
-import db, { subscribeDB } from "./libs/db";
+import db, { subscribeDB } from "../libs/db";
 import { atomFamily, atomWithRefresh } from "jotai/utils";
-import { startViewTransition } from "./libs/ui";
+import { startViewTransition } from "../libs/ui";
 
 // Jotai store for external updates
 const store = getDefaultStore();

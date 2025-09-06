@@ -1,4 +1,4 @@
-import { installedAppsAtom, storeAppsAtom } from "@/state";
+import { installedAppsAtom, storeAppsAtom } from "@/state/app-ecosystem";
 import { useAtomValue } from "jotai";
 import FormatMoney from "./format/money";
 import { useMemo } from "react";
