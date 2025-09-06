@@ -1,4 +1,5 @@
 import type { Active3DWindow, WindowConfig } from "@/types";
+import type { PresetsType } from "@react-three/drei/helpers/environment-assets";
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 
@@ -189,3 +190,8 @@ export const animationStateAtom = atom<"idle" | "transitioning" | "zooming">(
 );
 
 export const windowsStatesAtom = atom<Active3DWindow[]>([]);
+
+export const environmentPresetAtom = atomWithStorage<PresetsType>(
+  "environmentPreset",
+  "apartment"
+);

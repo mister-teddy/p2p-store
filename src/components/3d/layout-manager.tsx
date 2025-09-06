@@ -11,10 +11,12 @@ import {
   animationStateAtom,
   windowsStatesAtom,
   enabled3DModeAtom,
+  environmentPresetAtom,
 } from "@/state/3d";
 import GestureSystem3D from "./gesture-system";
 import Launcher3D from "./launcher";
 import Window3D from "./window";
+import { presetsObj } from "@react-three/drei/helpers/environment-assets";
 
 interface LayoutManager3DProps {
   showStats?: boolean;
@@ -41,6 +43,9 @@ export default function LayoutManager3D({
   const [animationState] = useAtom(animationStateAtom);
   const windows = useAtomValue(windowsStatesAtom);
   const setEnabled3DMode = useSetAtom(enabled3DModeAtom);
+  const [environmentPreset, setEnvironmentPreset] = useAtom(
+    environmentPresetAtom
+  );
 
   // Device detection effect
   useEffect(() => {
@@ -95,7 +100,7 @@ export default function LayoutManager3D({
           </Window3D>
         ))}
 
-        <Environment background preset="apartment" />
+        <Environment background preset={environmentPreset} />
 
         {/* Camera Controls */}
         <OrbitControls
@@ -138,12 +143,12 @@ export default function LayoutManager3D({
           <div className="absolute bottom-4 right-4 z-50 space-y-2">
             <button
               onClick={() => setEnabled3DMode(false)}
-              className="px-3 py-1 bg-black/20 text-white rounded-lg text-sm backdrop-blur block"
+              className="px-3 py-1 bg-black/20 backdrop-blur text-white rounded-lg text-sm block"
             >
               2D Mode
             </button>
           </div>
-          <div className="absolute top-4 right-4 z-50 space-y-2 px-3 py-1 bg-black/20 text-white rounded-lg text-xs backdrop-blur">
+          <div className="absolute top-4 right-4 z-50 space-y-2 px-3 py-1 bg-black/20 backdrop-blur text-white rounded-lg text-xs">
             Device: {deviceType}
             <br />
             Performance: {deviceCapabilities.performanceScore}/10
@@ -153,6 +158,39 @@ export default function LayoutManager3D({
             WebGL: {deviceCapabilities.hasWebGL ? "✓" : "✗"}
             <br />
             Hardware: {deviceCapabilities.hasHardwareAcceleration ? "✓" : "✗"}
+          </div>
+          {/* Bottom left corner */}
+          <div className="absolute bottom-4 left-4 z-50 flex gap-1">
+            {/* Preset selection */}
+            {Object.keys(presetsObj).map((preset) => (
+              <button
+                key={preset}
+                onClick={() =>
+                  setEnvironmentPreset(preset as keyof typeof presetsObj)
+                }
+                className={`px-2 py-1 rounded text-sm border border-white/30 bg-black/20 backdrop-blur ${
+                  environmentPreset === preset
+                    ? "text-indigo-700 font-bold bg-white/20"
+                    : "text-white"
+                }`}
+                title={preset}
+              >
+                {
+                  {
+                    sunset: "🌅",
+                    dawn: "🌄",
+                    night: "🌃",
+                    warehouse: "🏭",
+                    forest: "🌲",
+                    apartment: "🏢",
+                    studio: "🎬",
+                    city: "🏙️",
+                    park: "🏞️",
+                    lobby: "🏛️",
+                  }[preset]
+                }
+              </button>
+            ))}
           </div>
         </>
       )}

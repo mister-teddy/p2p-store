@@ -1,62 +1,7 @@
-// api/generate-todo.rs
-use reqwest::Client;
-use serde::{Deserialize, Serialize};
-use std::env;
-use vercel_runtime::{run, Body, Error, Request, Response, StatusCode};
+// Using direct API calls instead of WASM for now
+// WASM integration can be added later once Vercel deployment is working
 
-#[derive(Deserialize)]
-struct TodoGenerateRequest {
-    prompt: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct AnthropicResponse {
-    content: Option<Vec<AnthropicContent>>,
-}
-
-#[derive(Serialize, Deserialize)]
-struct AnthropicContent {
-    text: String,
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Error> {
-    run(handler).await
-}
-
-pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
-    // Handle CORS preflight requests
-    if req.method() == "OPTIONS" {
-        return Response::builder()
-            .status(StatusCode::OK)
-            .header("Access-Control-Allow-Origin", "*")
-            .header("Access-Control-Allow-Methods", "POST, OPTIONS")
-            .header("Access-Control-Allow-Headers", "Content-Type")
-            .body("".into())
-            .map_err(|e| Error::from(format!("Failed to build CORS response: {}", e)));
-    }
-
-    // Only allow POST requests
-    if req.method() != "POST" {
-        return Response::builder()
-            .status(405)
-            .header("Allow", "POST, OPTIONS")
-            .body("Method Not Allowed".into())
-            .map_err(|e| Error::from(format!("Failed to build response: {}", e)));
-    }
-
-    // Parse request body
-    let body = req.body();
-    let payload: TodoGenerateRequest = serde_json::from_slice(body)
-        .map_err(|e| Error::from(format!("Failed to parse request body: {}", e)))?;
-    
-    let client = Client::new();
-    
-    // Get API key from environment
-    let api_key = env::var("ANTHROPIC_API_KEY")
-        .map_err(|_| Error::from("ANTHROPIC_API_KEY environment variable is required"))?;
-    
-    let system_message = r#"---
+const systemMessage = `---
 name: react-specialist
 description: Expert React specialist mastering React 18+ with modern patterns and ecosystem. Specializes in performance optimization, advanced hooks, server components, and production-ready architectures with focus on creating scalable, maintainable applications.
 tools: vite, webpack, jest, cypress, storybook, react-devtools, npm, typescript
@@ -198,7 +143,7 @@ Migration strategies:
 Initialize React development by understanding project requirements.
 
 React context query:
-```json
+\`\`\`json
 {
   "requesting_agent": "react-specialist",
   "request_type": "get_react_context",
@@ -206,7 +151,7 @@ React context query:
     "query": "React context needed: project type, performance requirements, state management approach, testing strategy, and deployment target."
   }
 }
-```
+\`\`\`
 
 ## Development Workflow
 
@@ -261,7 +206,7 @@ React patterns:
 - Testing coverage
 
 Progress tracking:
-```json
+\`\`\`json
 {
   "agent": "react-specialist",
   "status": "implementing",
@@ -272,7 +217,7 @@ Progress tracking:
     "bundle_size": "142KB"
   }
 }
-```
+\`\`\`
 
 ### 3. React Excellence
 
@@ -351,58 +296,72 @@ Integration with other agents:
 - Partner with accessibility-specialist on a11y
 - Coordinate with devops-engineer on deployment
 
-Always prioritize performance, maintainability, and user experience while building React applications that scale effectively and deliver exceptional results."#;
+Always prioritize performance, maintainability, and user experience while building React applications that scale effectively and deliver exceptional results.`;
 
-    let request_body = serde_json::json!({
-        "model": "claude-3-haiku-20240307",
-        "max_tokens": 4096,
-        "temperature": 1.0,
-        "system": system_message,
-        "messages": [{ 
-            "role": "user", 
-            "content": [{ 
-                "type": "text", 
-                "text": payload.prompt 
-            }] 
-        }],
-    });
+export default async function handler(req, res) {
+  // Handle CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { prompt } = req.body;
+    
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'ANTHROPIC_API_KEY environment variable is required' });
+    }
+
+    // Build the request body
+    const requestBody = {
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 4096,
+      temperature: 1.0,
+      system: systemMessage,
+      messages: [{
+        role: 'user',
+        content: [{
+          type: 'text',
+          text: prompt
+        }]
+      }]
+    };
 
     // Make request to Anthropic API
-    let resp = client
-        .post("https://api.anthropic.com/v1/messages")
-        .header("Content-Type", "application/json")
-        .header("x-api-key", api_key)
-        .header("anthropic-version", "2023-06-01")
-        .json(&request_body)
-        .send()
-        .await
-        .map_err(|e| Error::from(format!("Request failed: {}", e)))?;
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify(requestBody)
+    });
 
-    // Check if the response status indicates an error
-    if !resp.status().is_success() {
-        let status = resp.status();
-        let error_text = resp.text().await.unwrap_or_else(|_| "Unknown error".to_string());
-        return Err(Error::from(format!("Anthropic API error: {} - {}", status, error_text)));
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Anthropic API error: ${response.status} - ${errorText}`);
+      return res.status(response.status).json({ error: `API error: ${response.status}` });
     }
 
-    let data: AnthropicResponse = resp
-        .json()
-        .await
-        .map_err(|e| Error::from(format!("Failed to parse response: {}", e)))?;
-
-    if let Some(content) = data.content.and_then(|mut c| c.pop()) {
-        let json_body = serde_json::to_string(&content)
-            .map_err(|e| Error::from(format!("Failed to serialize response: {}", e)))?;
-        
-        Response::builder()
-            .status(StatusCode::OK)
-            .header("Content-Type", "application/json")
-            .header("Access-Control-Allow-Origin", "*")
-            .header("Access-Control-Allow-Methods", "POST, OPTIONS")
-            .header("Access-Control-Allow-Headers", "Content-Type")
-            .body(json_body.into())
-            .map_err(|e| Error::from(format!("Failed to build response: {}", e)))
+    const data = await response.json();
+    
+    if (data.content && data.content.length > 0) {
+      const content = data.content[0];
+      return res.status(200).json(content);
     } else {
-        Err(Error::from("No content returned from API"))
+      return res.status(500).json({ error: 'No content returned from API' });
     }
+  } catch (error) {
+    console.error('Error in generate-todo endpoint:', error);
+    return res.status(500).json({ error: error.message || 'Unknown error' });
+  }
 }
