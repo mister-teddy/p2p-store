@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:wasm && tsc -b && vite build",
-    "build:wasm": "cd wasm-server && cargo build --target wasm32-unknown-unknown --release && cp target/wasm32-unknown-unknown/release/anthropic_wasm.wasm ../",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

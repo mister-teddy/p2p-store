@@ -1,19 +1,8 @@
-// server/src/main.rs
-use axum::extract::State;
-use axum::{routing::post, Json, Router};
+// api/generate-todo.rs
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::env;
-use tracing_subscriber;
-
-#[derive(Deserialize)]
-struct GenerateRequest {
-    prompt: String,
-    model: Option<String>,
-    max_tokens: Option<u32>,
-    temperature: Option<f32>,
-    system: Option<String>,
-}
+use vercel_runtime::{run, Body, Error, Request, Response, StatusCode};
 
 #[derive(Deserialize)]
 struct TodoGenerateRequest {
@@ -30,89 +19,43 @@ struct AnthropicContent {
     text: String,
 }
 
-async fn generate_code(
-    State(client): State<Client>,
-    Json(payload): Json<GenerateRequest>,
-) -> Result<Json<AnthropicContent>, (axum::http::StatusCode, String)> {
-    let api_key = env::var("ANTHROPIC_API_KEY").map_err(|_| {
-        (
-            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-            "API key missing".to_string(),
-        )
-    })?;
-
-    // Build the request body with configurable parameters
-    let mut body = serde_json::json!({
-        "model": payload.model.unwrap_or_else(|| "claude-3-haiku-20240307".to_string()),
-        "max_tokens": payload.max_tokens.unwrap_or(4096),
-        "temperature": payload.temperature.unwrap_or(1.0),
-        "messages": [{ 
-            "role": "user", 
-            "content": [{ 
-                "type": "text", 
-                "text": payload.prompt 
-            }] 
-        }],
-    });
-
-    // Add system message if provided
-    if let Some(system_msg) = payload.system {
-        body["system"] = serde_json::json!(system_msg);
-    }
-
-    let resp = client
-        .post("https://api.anthropic.com/v1/messages")
-        .header("Content-Type", "application/json")
-        .header("x-api-key", api_key)
-        .header("anthropic-version", "2023-06-01")
-        .json(&body)
-        .send()
-        .await
-        .map_err(|e| {
-            tracing::error!("Request failed: {}", e);
-            (axum::http::StatusCode::BAD_GATEWAY, e.to_string())
-        })?;
-
-    // Check if the response status indicates an error
-    if !resp.status().is_success() {
-        let status = resp.status();
-        let error_text = resp.text().await.unwrap_or_else(|_| "Unknown error".to_string());
-        tracing::error!("API error {}: {}", status, error_text);
-        return Err((
-            axum::http::StatusCode::BAD_GATEWAY,
-            format!("Anthropic API error: {} - {}", status, error_text),
-        ));
-    }
-
-    let data: AnthropicResponse = resp
-        .json()
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to parse response: {}", e);
-            (axum::http::StatusCode::BAD_GATEWAY, e.to_string())
-        })?;
-
-    if let Some(content) = data.content.and_then(|mut c| c.pop()) {
-        Ok(Json(content))
-    } else {
-        Err((
-            axum::http::StatusCode::BAD_GATEWAY,
-            "No content returned from API".to_string(),
-        ))
-    }
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    run(handler).await
 }
 
-async fn generate_todo_app(
-    State(client): State<Client>,
-    Json(payload): Json<TodoGenerateRequest>,
-) -> Result<Json<AnthropicContent>, (axum::http::StatusCode, String)> {
-    let api_key = env::var("ANTHROPIC_API_KEY").map_err(|_| {
-        (
-            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-            "API key missing".to_string(),
-        )
-    })?;
+pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
+    // Handle CORS preflight requests
+    if req.method() == "OPTIONS" {
+        return Response::builder()
+            .status(StatusCode::OK)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Access-Control-Allow-Methods", "POST, OPTIONS")
+            .header("Access-Control-Allow-Headers", "Content-Type")
+            .body("".into())
+            .map_err(|e| Error::from(format!("Failed to build CORS response: {}", e)));
+    }
 
+    // Only allow POST requests
+    if req.method() != "POST" {
+        return Response::builder()
+            .status(405)
+            .header("Allow", "POST, OPTIONS")
+            .body("Method Not Allowed".into())
+            .map_err(|e| Error::from(format!("Failed to build response: {}", e)));
+    }
+
+    // Parse request body
+    let body = req.body();
+    let payload: TodoGenerateRequest = serde_json::from_slice(body)
+        .map_err(|e| Error::from(format!("Failed to parse request body: {}", e)))?;
+    
+    let client = Client::new();
+    
+    // Get API key from environment
+    let api_key = env::var("ANTHROPIC_API_KEY")
+        .map_err(|_| Error::from("ANTHROPIC_API_KEY environment variable is required"))?;
+    
     let system_message = r#"---
 name: react-specialist
 description: Expert React specialist mastering React 18+ with modern patterns and ecosystem. Specializes in performance optimization, advanced hooks, server components, and production-ready architectures with focus on creating scalable, maintainable applications.
@@ -410,10 +353,10 @@ Integration with other agents:
 
 Always prioritize performance, maintainability, and user experience while building React applications that scale effectively and deliver exceptional results."#;
 
-    let body = serde_json::json!({
+    let request_body = serde_json::json!({
         "model": "claude-3-haiku-20240307",
         "max_tokens": 4096,
-        "temperature": 1,
+        "temperature": 1.0,
         "system": system_message,
         "messages": [{ 
             "role": "user", 
@@ -424,60 +367,42 @@ Always prioritize performance, maintainability, and user experience while buildi
         }],
     });
 
+    // Make request to Anthropic API
     let resp = client
         .post("https://api.anthropic.com/v1/messages")
         .header("Content-Type", "application/json")
         .header("x-api-key", api_key)
         .header("anthropic-version", "2023-06-01")
-        .json(&body)
+        .json(&request_body)
         .send()
         .await
-        .map_err(|e| {
-            tracing::error!("Request failed: {}", e);
-            (axum::http::StatusCode::BAD_GATEWAY, e.to_string())
-        })?;
+        .map_err(|e| Error::from(format!("Request failed: {}", e)))?;
 
     // Check if the response status indicates an error
     if !resp.status().is_success() {
         let status = resp.status();
         let error_text = resp.text().await.unwrap_or_else(|_| "Unknown error".to_string());
-        tracing::error!("API error {}: {}", status, error_text);
-        return Err((
-            axum::http::StatusCode::BAD_GATEWAY,
-            format!("Anthropic API error: {} - {}", status, error_text),
-        ));
+        return Err(Error::from(format!("Anthropic API error: {} - {}", status, error_text)));
     }
 
     let data: AnthropicResponse = resp
         .json()
         .await
-        .map_err(|e| {
-            tracing::error!("Failed to parse response: {}", e);
-            (axum::http::StatusCode::BAD_GATEWAY, e.to_string())
-        })?;
+        .map_err(|e| Error::from(format!("Failed to parse response: {}", e)))?;
 
     if let Some(content) = data.content.and_then(|mut c| c.pop()) {
-        tracing::info!("Successfully generated todo app response");
-        Ok(Json(content))
+        let json_body = serde_json::to_string(&content)
+            .map_err(|e| Error::from(format!("Failed to serialize response: {}", e)))?;
+        
+        Response::builder()
+            .status(StatusCode::OK)
+            .header("Content-Type", "application/json")
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Access-Control-Allow-Methods", "POST, OPTIONS")
+            .header("Access-Control-Allow-Headers", "Content-Type")
+            .body(json_body.into())
+            .map_err(|e| Error::from(format!("Failed to build response: {}", e)))
     } else {
-        Err((
-            axum::http::StatusCode::BAD_GATEWAY,
-            "No content returned from API".to_string(),
-        ))
+        Err(Error::from("No content returned from API"))
     }
-}
-
-#[tokio::main]
-async fn main() {
-    dotenv::dotenv().ok();
-    tracing_subscriber::fmt::init();
-    let client = Client::new();
-    let app = Router::new()
-        .route("/generate", post(generate_code))
-        .route("/generate-todo", post(generate_todo_app))
-        .with_state(client);
-    let addr = "127.0.0.1:8080";
-    tracing::info!("Listening on {}", addr);
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
 }
