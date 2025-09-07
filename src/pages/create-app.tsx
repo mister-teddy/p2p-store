@@ -1,18 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StyledInput from "@/components/forms/input";
 import { generateAppCode } from "@/libs/anthropic";
+import { useAtom, useSetAtom } from "jotai";
+import { generatedCodeState } from "@/state/app-ecosystem";
+import { windowsStatesAtom } from "@/state/3d";
+import Spinner from "@/components/spinner";
 
 const CreateAppPage: React.FC = () => {
-  const [description, setDescription] = useState("");
-  const [generatedCode, setGeneratedCode] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [generatedCode, setGeneratedCode] = useAtom(generatedCodeState);
+  const setActiveWindows = useSetAtom(windowsStatesAtom);
+
+  useEffect(() => {
+    // Open the generated code window when there's generated code
+    if (generatedCode) {
+      setActiveWindows((prev) => {
+        const createdAppWindow = prev.find((w) => w.title === "Create App");
+        if (createdAppWindow) {
+          // If the window already exists, just bring it to front
+          createdAppWindow.biFoldContent = (
+            <div dangerouslySetInnerHTML={{ __html: generatedCode }}></div>
+          );
+          return [...prev];
+        }
+        return prev;
+      });
+    }
+  }, [generatedCode, setActiveWindows]);
 
   const handleGenerate = async () => {
+    if (!prompt.trim()) return;
     setLoading(true);
     setError("");
     try {
-      const code = await generateAppCode(description || "Generate a Todo app");
+      const code = await generateAppCode(prompt);
       setGeneratedCode(code);
     } catch (err) {
       setError((err as Error).message || "Failed to generate code.");
@@ -22,71 +45,60 @@ const CreateAppPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full p-6">
-      <h1 className="text-2xl font-bold mb-6 text-center">Create App</h1>
+    <div className="flex flex-col h-full">
+      {/* Chat area */}
+      <div className="flex-1 flex items-center justify-center overflow-y-auto">
+        {error ? (
+          <div className="p-4 text-red-500 text-sm">{error}</div>
+        ) : loading ? (
+          <Spinner />
+        ) : generatedCode ? (
+          <pre className="p-4 self-stretch whitespace-pre-wrap bg-gray-900 text-gray-200 font-mono text-sm">
+            {generatedCode}
+          </pre>
+        ) : null}
+      </div>
 
-      <div className="flex-1 flex flex-col space-y-4">
-        {/* Description Input */}
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Describe your app:
-          </label>
-          <StyledInput
-            as="textarea"
-            className="w-full h-32 p-3 rounded-lg border border-gray-300 resize-none"
-            placeholder="Describe the app you want to create..."
-            value={description}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              setDescription(e.target.value)
-            }
-          />
-        </div>
-
-        {/* Generate Button */}
+      {/* Prompt input bar */}
+      <div className="w-full px-4 py-3 bg-[#e3e3e3] border-t border-gray-200 flex items-center gap-2 flex-none">
+        <StyledInput
+          as="input"
+          className="flex-1 h-10 px-3 rounded-xl border border-gray-300 bg-white text-base focus:border-blue-400 transition"
+          placeholder="Build anything"
+          value={prompt}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPrompt(e.target.value)
+          }
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter" && !loading) handleGenerate();
+          }}
+          disabled={loading}
+          type="text"
+          autoComplete="off"
+        />
         <button
-          className={`
-              w-full px-6 py-3 rounded-lg font-medium transition-colors
-              ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 active:bg-blue-800"
-              }
-              text-white
-            `}
+          className={`w-10 h-10 rounded-full flex items-center justify-center bg-white shadow transition ${
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100"
+          }`}
           onClick={handleGenerate}
           disabled={loading}
+          aria-label="Send"
         >
-          {loading ? "Generating..." : "Generate App"}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-6 h-6 text-gray-700"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h14M12 5l7 7-7 7"
+            />
+          </svg>
         </button>
-
-        {/* Error Display */}
-        {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-            {error}
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading && (
-          <div className="flex items-center justify-center p-4">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-              <p className="text-gray-600 text-sm">Generating your app...</p>
-            </div>
-          </div>
-        )}
-
-        {/* Generated Code */}
-        {generatedCode && (
-          <div className="flex-1 overflow-hidden">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Generated Code:
-            </label>
-            <pre className="w-full h-64 bg-gray-900 text-green-400 p-3 rounded-lg overflow-auto text-xs font-mono">
-              {generatedCode}
-            </pre>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -93,7 +93,7 @@ export const deviceCapabilitiesAtom = atom((get) => {
 });
 
 // Auto-detect device type based on screen size and user agent
-export const responsiveIs3DModeAtom = atom((get) => {
+export const adaptiveIs3DModeAtom = atom((get) => {
   const userRequested3D = get(enabled3DModeAtom);
   const capabilities = get(deviceCapabilitiesAtom);
 
@@ -106,7 +106,7 @@ export const responsiveIs3DModeAtom = atom((get) => {
 // Quality settings based on device capabilities
 export const renderQualityAtom = atom((get) => {
   const capabilities = get(deviceCapabilitiesAtom);
-  const is3D = get(responsiveIs3DModeAtom);
+  const is3D = get(adaptiveIs3DModeAtom);
 
   if (!is3D) {
     return {

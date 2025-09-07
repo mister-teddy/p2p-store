@@ -41,3 +41,5 @@ export const appByIdAtom = atomFamily((id: string) =>
     return selectedApp;
   })
 );
+
+export const generatedCodeState = atom<string>("");

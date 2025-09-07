@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { useAtomValue } from "jotai";
-import { responsiveIs3DModeAtom } from "@/state/3d";
+import { adaptiveIs3DModeAtom } from "@/state/3d";
 import LayoutManager3D from "@/components/3d/layout-manager";
 import Spinner from "@/components/spinner";
 // 2D Layout Components
@@ -9,7 +9,7 @@ import { Outlet } from "react-router-dom";
 
 // Layout wrapper that contains 3D/2D layout logic - used by individual pages
 export function RootLayout() {
-  const is3DMode = useAtomValue(responsiveIs3DModeAtom);
+  const is3DMode = useAtomValue(adaptiveIs3DModeAtom);
 
   if (is3DMode) {
     return (

@@ -1,4 +1,4 @@
-import { enabled3DModeAtom, responsiveIs3DModeAtom } from "@/state/3d";
+import { enabled3DModeAtom, adaptiveIs3DModeAtom } from "@/state/3d";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useState, useRef, useEffect } from "react";
 
@@ -7,7 +7,7 @@ export default function Profile() {
   const ref = useRef<HTMLDivElement>(null);
   const clickedRef = useRef(false);
   const setEnabled3DMode = useSetAtom(enabled3DModeAtom);
-  const is3D = useAtomValue(responsiveIs3DModeAtom);
+  const is3D = useAtomValue(adaptiveIs3DModeAtom);
 
   // Close popover when clicking outside
   useEffect(() => {
