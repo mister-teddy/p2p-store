@@ -22,6 +22,9 @@ export default function Launcher3D() {
                 version: "1.0.0",
                 installed: 1,
               }}
+              preferedSize={
+                ["/", "/store"].includes(item.path) ? [16, 9] : undefined
+              }
               component={item.component}
             >
               {({ onClick }) => (
@@ -32,11 +35,8 @@ export default function Launcher3D() {
                     flex flex-col items-center justify-center
                     p-4 rounded-lg transition-all duration-200
                     aspect-square w-full
-                    ${
-                      location.pathname === item.path
-                        ? "text-blue-600 bg-blue-50 shadow-sm"
-                        : "text-gray-700 hover:bg-gray-100 hover:shadow-sm"
-                    }
+                    bg-gray-200
+                    text-gray-700 hover:bg-gray-100 hover:shadow-sm
                   `}
                 >
                   <span className="text-2xl mb-2">{item.icon}</span>

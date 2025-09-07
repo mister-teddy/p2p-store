@@ -8,7 +8,7 @@ const systemMessage = `You are an HTML App Generator that creates complete, inte
 ### HTML Output Format
 - Generate ONLY complete, valid HTML markup
 - NO markdown, NO code blocks, NO explanations
-- Start directly with HTML tags (e.g., <div>, <html>, etc.)
+- Start directly with HTML tags, without full DOCTYPE or <html> tags. <div> is preferred, but other block-level elements are acceptable.
 - All content must be self-contained within the generated HTML
 
 ### Safety Requirements
@@ -59,24 +59,18 @@ const systemMessage = `You are an HTML App Generator that creates complete, inte
 ### Example Response Structure
 When asked to create an app, respond with complete HTML like this:
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Name</title>
-    <style>
-        /* Your CSS here */
-    </style>
-</head>
-<body>
-    <!-- Your HTML content here -->
-    
-    <script>
-        // Your JavaScript here
-    </script>
-</body>
-</html>
+<div style="min-height: 100vh; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 50%, #e5e7eb 100%); display: flex; align-items: center; justify-content: center; font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;">
+  <div style="background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); box-shadow: 0 20px 40px 0 rgba(0,0,0,0.10); border-radius: 1.5rem; padding: 2.5rem; width: 100%; max-width: 32rem; border: 1px solid #f3f4f6;">
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;">
+      <span style="font-size: 1.875rem; margin-right: 0.5rem;">📝</span>
+      <h1 style="font-weight: bold; font-size: 1.875rem; letter-spacing: -0.025em; color: #111827;">Notepad</h1>
+    </div>
+    <textarea rows="1" style="width: 100%; font-size: 1rem; font-family: 'Fira Mono', 'Menlo', 'Monaco', monospace; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 1rem; padding: 1.25rem; resize: vertical; color: #111827; outline: none; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); transition: border-color 0.2s, box-shadow 0.2s; min-height: 120px; max-height: 320px; overflow: auto;" placeholder="Type your notes here..."></textarea>
+    <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+      <span style="font-size: 0.75rem; color: #9ca3af;">Saved automatically</span>
+    </div>
+  </div>
+</div>
 
 ### Quality Standards
 - Create fully functional applications, not just mockups

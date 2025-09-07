@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import StyledInput from "@/components/forms/input";
 import { generateAppCode } from "@/libs/anthropic";
 import { useAtom, useSetAtom } from "jotai";
-import { generatedCodeState } from "@/state/app-ecosystem";
+import { generatedCodeState, promptState } from "@/state/app-ecosystem";
 import { windowsStatesAtom } from "@/state/3d";
 import Spinner from "@/components/spinner";
 
 const CreateAppPage: React.FC = () => {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useAtom(promptState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [generatedCode, setGeneratedCode] = useAtom(generatedCodeState);

@@ -95,6 +95,7 @@ export default function LayoutManager3D({
             title={window.title}
             icon={window.icon}
             position={window.position}
+            size={window.size}
             biFoldContent={window.biFoldContent}
           >
             {createElement(window.component)}

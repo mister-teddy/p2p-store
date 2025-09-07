@@ -66,5 +66,6 @@ export interface Active3DWindow {
   icon?: string;
   component: React.ComponentType;
   position: [number, number, number];
+  size?: [number, number];
   biFoldContent?: React.ReactNode;
 }

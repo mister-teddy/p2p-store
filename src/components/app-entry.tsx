@@ -12,6 +12,7 @@ import AppRenderer from "./app-renderer";
 
 interface AppEntryProps {
   app: Selectable<AppTable>;
+  preferedSize?: [number, number];
   component?: ComponentType;
   children: (renderProps: { onClick: () => void }) => ReactNode;
 }
@@ -32,6 +33,7 @@ const AppEntry2D: FunctionComponent<AppEntryProps> = ({ app, children }) => {
 
 const AppEntry3D: FunctionComponent<AppEntryProps> = ({
   app,
+  preferedSize,
   children,
   component,
 }) => {
@@ -60,6 +62,7 @@ const AppEntry3D: FunctionComponent<AppEntryProps> = ({
             title: app.name,
             icon: app.icon,
             component: component ? component : () => <AppRenderer app={app} />,
+            size: preferedSize,
             position: [x, HEIGHT, z],
           },
         ];

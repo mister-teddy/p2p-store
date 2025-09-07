@@ -28,7 +28,7 @@ export default function Window3D({
   title,
   icon,
   position = [0, 0, 0],
-  size = [12, 16],
+  size = [9, 16],
   biFoldContent,
   windowId,
 }: Window3DProps) {
