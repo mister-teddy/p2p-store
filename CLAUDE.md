@@ -119,3 +119,25 @@ Use these agents for specialized tasks within their domains.
 - No specific test framework configured - check for existing test patterns before implementing
 - Focus on P2P functionality testing including network partitions
 - Verify offline-first behavior and Lightning payment flows
+
+## Tech Stack Rationale
+
+Our architecture reflects core principles: decentralization, privacy, and financial sovereignty.
+
+### Bitcoin + Lightning Network
+Bitcoin is the only truly decentralized blockchain at scale. Lightning enables millions of transactions per second while preserving Bitcoin's decentralization—the only credible path to global peer-to-peer digital cash.
+
+### IPv6 + No Domains
+True sovereignty means no gatekeepers. Domains require centralized registration and can be revoked. IPv6 over HTTP bypasses these systems, creating uncensorable infrastructure. IPv6 ensures scalability with virtually unlimited addresses.
+
+### PWA (Progressive Web App)
+Mobile app stores are gatekeepers with 30% taxes and censorship risk. PWAs deliver native app experience (offline, notifications, home screen) with web freedom—no permission required.
+
+### L402 Protocol
+HTTP 402 "Payment Required" was reserved 20+ years ago but unused. With Bitcoin/Lightning, L402 brings native micropayments to web protocols. Industry leaders like Coinbase and Anthropic are adopting this standard.
+
+### Front-End Loaded Architecture
+Optimized for <1GB RAM devices. Browser handles processing while server focuses on data/CRUD operations. Rust backend for performance/safety, cached frontend for speed.
+
+### 3D UI
+3D interface using Three.js feels more intuitive than 2D layouts. WebXR-compatible for VR/AR devices without vendor lock-in. Desktop/tablet default with 2D phone mode.

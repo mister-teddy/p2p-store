@@ -1,6 +1,6 @@
 import { atom, getDefaultStore } from "jotai";
 import db, { subscribeDB } from "../libs/db";
-import { atomFamily, atomWithRefresh } from "jotai/utils";
+import { atomFamily, atomWithRefresh, atomWithStorage } from "jotai/utils";
 import { startViewTransition } from "../libs/ui";
 
 // Jotai store for external updates
@@ -42,5 +42,5 @@ export const appByIdAtom = atomFamily((id: string) =>
   })
 );
 
-export const promptState = atom("");
-export const generatedCodeState = atom("");
+export const promptState = atomWithStorage("prompt", "");
+export const generatedCodeState = atomWithStorage("generatedCode", "");

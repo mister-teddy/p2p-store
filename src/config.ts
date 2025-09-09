@@ -3,6 +3,15 @@ import DashboardPage from "@/pages/dashboard";
 import HomePage from "@/pages/home";
 
 const CONFIG = {
+  API: {
+    BASE_URL: import.meta.env.DEV 
+      ? "http://localhost:10000" 
+      : "https://p2p-mini-server-8olf.onrender.com",
+    ENDPOINTS: {
+      GENERATE: "/generate",
+      GENERATE_STREAM: "/generate/stream",
+    },
+  },
   SIDEBAR_ITEMS: [
     {
       path: "/",

@@ -42,7 +42,7 @@ export function RootLayout() {
   return (
     <div className="flex w-full h-full">
       <Sidebar />
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <Suspense fallback={<Spinner />}>
           <Outlet />
         </Suspense>
